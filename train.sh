@@ -1,0 +1,1 @@
+deepspeed --num_gpus=2 runner.py
