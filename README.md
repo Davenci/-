@@ -1,5 +1,5 @@
 
-# 文本分类模型项目说明
+# Bert文本分类器使用说明
 ## 一、模型原理
 本项目采用 Bert 模型构建文本分类模型。Bert（Bidirectional Encoder Representations from Transformers）是一种基于 Transformer 架构的预训练语言模型，具有强大的语言理解能力。
 在本分类任务中，我们利用 Bert 模型最后一层输出的第一个 token 位置，即 CLS（Classification）位置的向量作为整个句子的表示。CLS 标记是在输入序列开始时添加的特殊标记，经过 Bert 模型处理后，其对应的输出向量会融合整个句子的语义信息。之后，将该向量输入到一个全连接层（Linear Layer）进行分类，全连接层会根据输入的特征向量输出每个类别的预测得分，通过后续的 softmax 函数将得分转换为概率，从而确定输入文本所属的类别。
@@ -30,9 +30,16 @@ weighted avg       0.90      0.91      0.93     76538
 
 ## 二、训练步骤
 ### 2.1 环境安装
+
+项目克隆
+```
+git clone https://github.com/Davenci/TextClassifier.git
+```
+
+环境安装
 ```
 conda create --name testclass python=3.10 -y
-cd textclass
+cd TextClassifier
 pip install -r requirements.txt
 ```
 安装deepspeed的时候，建议单独用conda安装：
@@ -47,24 +54,17 @@ from datasets import load_dataset
 ds = load_dataset("fourteenBDr/toutiao")
 ```
 ### 2.3 训练参数配置
-你可以在 
-```
-runner.py 
-```
-文件中设置训练所需的数据量和训练轮次。通过调整这些参数，你可以根据自己的需求和计算资源对模型进行训练优化。
+你可以在 `runner.py `文件中设置训练所需的数据量和训练轮次。通过调整这些参数，你可以根据自己的需求和计算资源对模型进行训练优化。
 ```
 # 设置所需的数据量
-train_data_size = 10000
+test_size=0.2 # 测试集比例
+
 # 设置训练轮次
 num_epochs = 5
 ```
 ### 2.4 分布式训练配置
 为了加速模型训练过程，本项目采用了 DeepSpeed 框架进行分布式训练。DeepSpeed 是一个用于大规模分布式训练的优化库，它提供了多种训练策略和优化算法，可以有效提高训练效率和模型性能。
-你可以在 
-```
-train.py 
-```
-文件中配置 deepspeed_config 来选择合适的训练策略。以下是一个简单的配置示例：
+你可以在 `train.py `文件中配置 deepspeed_config 来选择合适的训练策略。以下是一个简单的配置示例：
 ```
 # train.py
 import deepspeed
@@ -101,13 +101,7 @@ model, optimizer, _, _ = deepspeed.initialize(
 )
 ```
 ### 2.5 开始训练
-在完成上述配置后，你可以通过运行 `textclass/train.sh` 脚本来启动训练过程。该脚本会自动加载数据集、配置训练参数并启动分布式训练。示例 train.
-sh 脚本内容如下：
-```
-# train.sh
-runner.py
-```
-在终端中执行以下命令开始训练：
+在完成上述配置后，你可以通过运行 `textclass/train.sh` 脚本来启动训练过程。该脚本会自动加载数据集、配置训练参数并启动分布式训练。在终端中执行以下命令开始训练：
 ```
 train.sh
 ```
@@ -117,7 +111,7 @@ train.sh
 
 
 ### 2.6 权重保存
-权重默认以PT格式自动保存在以下路径
+权重默认以PT格式自动保存在以下文件夹
 ```
 ckp
 ```
@@ -125,12 +119,12 @@ ckp
 
 ### 2.7 模型推理
 **PT格式权重推理**
-替换脚本中`model_path`权重路径即可
-```
-inference.py
-```
+
+替换`inference.py`脚本中`model_path`权重路径即可
+
 
 **onnx格式推理**
+
 *权重转化*
 在以下脚本中在`model_path`替换需要转化的权重
 ```
