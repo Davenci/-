@@ -31,6 +31,7 @@ weighted avg       0.90      0.91      0.93     76538
 ## 二、训练步骤
 ### 2.1 环境安装
 ```
+conda create --name testclass python=3.10 -y
 cd textclass
 pip install -r requirements.txt
 ```
