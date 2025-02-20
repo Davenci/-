@@ -47,6 +47,11 @@ pip install -r requirements.txt
 conda install mpi4py
 ```
 
+Tip！  环境搭配好后可以直接在终端运行以下脚本进行训练
+```
+train.sh
+```
+
 ### 2.2 数据集准备
 本项目使用 HuggingFace 的开源数据集，该数据集涵盖了 15 种不同的中文文本类型，为模型提供了丰富多样的训练数据。你可以按照以下代码加载数据集：
 ```
